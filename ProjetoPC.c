@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <time.h>
 
-#define TAM 100
+#define TAM 100000
 #define TRUE 1
 #define FALSE 0
 
@@ -55,43 +55,46 @@ int main(){
     printf("Execucao Serial: %fseg\n", tSerial);
 
     /*teste*/
-    /*int c = 0;
-    for(i = 2; i < TAM; i++){
-        if(v[i].marcado == TRUE){
-            printf("%d\t", v[i].num);
-            c++;
-        }
-    }
-    printf("C: %d\n", c);*/
 
-    resetarVetor(v);
+    struct no* v_;
+    v_ = gerarVetor(TAM);
+    
     /*VERSÃO OPENMP*/
     inicio = omp_get_wtime(); 
-    for(i = 2; i < TAM; i++){
-        if(v[i].marcado == TRUE){
+    
             #pragma omp parallel num_threads(4)
             {
-                #pragma omp parallel for 
-                for(j = v[i+1].num; j < TAM; j++){
-                    if(v[j].num % v[i].num == 0) v[j].marcado = FALSE;
+                for(i = 2; i < TAM; i++){
+                    if(v_[i].marcado == TRUE){
+                        #pragma omp parallel for 
+                        for(j = v_[i+1].num; j < TAM; j++){
+                            if(v_[j].num % v_[i].num == 0) v_[j].marcado = FALSE;
+                        }
+                    }
                 }
             }
             
-        }
-    }
+        
+    
     fim = omp_get_wtime();
     tSerial = fim - inicio;
     printf("Execucao openmp: %fseg\n", tSerial);
     printf("\n");
 
-    /*c = 0;
+    /*int c = 0;
+    int c_s = 0;
     for(i = 2; i < TAM; i++){
         if(v[i].marcado == TRUE){
             printf("%d\t", v[i].num);
+            c_s++;
+        }
+
+        if(v_[i].marcado == TRUE){
+            printf("%d\t", v_[i].num);
             c++;
         }
     }
-    printf("count: %d\t", c);*/
+    printf("count: %d\t%d", c, c_s);*/
 
     /*VERSÃO MPI*/
     
