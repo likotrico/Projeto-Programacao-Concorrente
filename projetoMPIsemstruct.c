@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TAM 20
+#define TAM 100
 #define TRUE 1
 #define FALSE 0
 
@@ -41,7 +41,7 @@ int main(){
     for(i = 0; i < TAM; i++){
         v[i] = TRUE;
     }
-    juncao = malloc((nprocs)*sizeof(int));
+    juncao = malloc((nprocs*quantidades)*sizeof(int));
     while((k*k)<=TAM){
 
         //MPI_Barrier(MPI_COMM_WORLD);   
@@ -93,14 +93,16 @@ int main(){
     printf("OK");    
 
     MPI_Barrier(MPI_COMM_WORLD);   
+    int count = 0;
     if(rank == 0){
         printf("PRIMOS:\n");
         for(i = 2; i < TAM; i++){
 		    if(v[i] == TRUE){
 			printf("[%d|%d]\t", i, v[i]);
-			//count++;
+			count++;
 		    }
 	    }
+        printf("count %d\n", count);
     }
 
     printf("TERMINOU\n");
