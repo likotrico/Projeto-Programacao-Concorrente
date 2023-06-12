@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TAM 100
+#define TAM 500000000
 #define TRUE 1
 #define FALSE 0
 
@@ -22,6 +22,9 @@ int main(){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     
+    float t_inicio, t_fim;
+    printf("%d\n", TAM);
+
     int *v = NULL, *subvetor = NULL;
     int quantidades =(int)(TAM/nprocs);
     if(rank == 0) printf("quantidades: %d\n", quantidades);
@@ -42,32 +45,33 @@ int main(){
         v[i] = TRUE;
     }
     juncao = malloc((nprocs*quantidades)*sizeof(int));
+    if (rank == 0) {
+        t_inicio = MPI_Wtime();
+    }
     while((k*k)<=TAM){
 
         //MPI_Barrier(MPI_COMM_WORLD);   
         MPI_Scatter(v, quantidades, MPI_INT, subvetor, quantidades, MPI_INT, 0, MPI_COMM_WORLD);
-        printf("Chegou k%d rank%d\n", k, rank);
+        //printf("Chegou k%d rank%d\n", k, rank);
         
         if(rank == 0){
             for(j = k*k; j < quantidades; j++){
                 if((j+(quantidades*rank)) % k == 0){
                 subvetor[j]= FALSE;
-                printf("Rank: %d; marcado: %d num: %d k:%d\n", rank, subvetor[j], j, k);    
+                //printf("Rank: %d; marcado: %d num: %d k:%d\n", rank, subvetor[j], j, k);    
             }
         }
         }else{
             for(j = 0; j<quantidades; j++){
             if((j+(quantidades*rank)) % k == 0){
                 subvetor[j]= FALSE;
-                printf("Rank: %d; marcado: %d num: %d k:%d\n", rank, subvetor[j], j, k);
+                //printf("Rank: %d; marcado: %d num: %d k:%d\n", rank, subvetor[j], j, k);
             }
         }
         }
         
         
-        printf("Chegou k%d rank%d\n", k, rank);
-        
-        
+        //printf("Chegou k%d rank%d\n", k, rank);
 
         //MPI_Barrier(MPI_COMM_WORLD);
         MPI_Allgather(subvetor, quantidades, MPI_INT, juncao, quantidades, MPI_INT, MPI_COMM_WORLD);
@@ -81,7 +85,7 @@ int main(){
         for(j = k+1; j<TAM; j++){
                 if(juncao[j] == TRUE){   
                     k = j;
-                    printf("k: %d\n", k);        
+                    //printf("k: %d\n", k);        
                     break;
                 }
         }
@@ -95,14 +99,16 @@ int main(){
     MPI_Barrier(MPI_COMM_WORLD);   
     int count = 0;
     if(rank == 0){
-        printf("PRIMOS:\n");
+        //printf("PRIMOS:\n");
         for(i = 2; i < TAM; i++){
 		    if(v[i] == TRUE){
-			printf("[%d|%d]\t", i, v[i]);
+			//printf("[%d|%d]\t", i, v[i]);
 			count++;
 		    }
 	    }
         printf("count %d\n", count);
+        t_fim = MPI_Wtime();
+        printf("Tempo: %.6f\n", t_fim - t_inicio);
     }
 
     printf("TERMINOU\n");
