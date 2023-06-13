@@ -31,8 +31,8 @@ int main(){
     int i, j;
     
 	int k = 2;
-	
-	#pragma omp parallel num_threads(2) shared(k)
+	double inicio = omp_get_wtime();
+	#pragma omp parallel num_threads(4) shared(k)
 	{
 		while((k*k) <= TAM){
 			
@@ -54,6 +54,9 @@ int main(){
 		}
 	}
 	
+    double fim = omp_get_wtime();
+    printf("Tempo: %f", fim - inicio);
+
 	int count = 0;
 	for(i = 2; i < TAM; i++){
 		if(v[i].marcado == TRUE){
@@ -66,12 +69,3 @@ int main(){
 	
 	return 0;
 }
-
-
-
-
-
-
-
-
-
