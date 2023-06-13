@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
 #define TAM 100000000
 #define TRUE 1
@@ -27,9 +28,10 @@ int main(){
 	
 	struct no* v;
     v = gerarVetor(TAM);
-    int i, j;
+    int i;
 
-    /*VERS√O SEQUENCIAL*/
+    /*VERS√ÉO SEQUENCIAL*/
+	double inicio = omp_get_wtime();
 	int k = 2;
 	while((k*k) <= TAM){
 		//printf("K: %d\n", k);
@@ -46,14 +48,7 @@ int main(){
 			}
 		}
 	}
-	int count = 0;
-	for(i = 2; i < TAM; i++){
-		if(v[i].marcado == TRUE){
-			//printf("%d\t", i);
-			count++;
-		}
-	}
-	
-	printf("\nCount:%d\n", count);
+	double fim = omp_get_wtime();
+	printf("Tempo %f", fim - inicio);
 	return 0;
 }
